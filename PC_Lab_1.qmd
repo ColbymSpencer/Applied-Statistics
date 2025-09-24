@@ -1,50 +1,51 @@
 ---
 title: "PC_Lab_1"
 format: html
-editor: Colby
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ### Exercise 1
+
 1.1.1. Find the help page for the function log().
+
 ```{r}
 ?log()
 ```
 
-1.1.2. Calculate the following values and store them as the objects x1, x2 en x3:
-• ln(12)
-• log 6 (216) 
-• log(1000)
+1.1.2. Calculate the following values and store them as the objects x1, x2 en x3: • ln(12) • log 6 (216) • log(1000)
+
 ```{r}
 x1 <- log(12)
 x2 <- log(216, base = 6)
 x3 <- log(1000, base = 10)
 ```
 
-1.1.3. Can you predict what the output is of these lines of code without running it? You can find that information on the help page
-• log(0, base = 5) 
-• log(-1)
+1.1.3. Can you predict what the output is of these lines of code without running it? You can find that information on the help page • log(0, base = 5) • log(-1)
+
 ```{r}
 print(log(0,base = 5))
 print(log(-1))
 ```
-log of zero for any base is undefined. In r it returns -inf
-The log function is only defined in 
+
+log of zero for any base is undefined. In r it returns -inf The log function is only defined in
 
 1.1.4. Remove the objects x1, x2 and x3
+
 ```{r}
 rm(x1,x2,x3)
 ```
 
 ### Exercise 2
-Start by downloading and unzipping the file AS PClab1.zip from UFORA. Once you’ve done that, do the following exercises.
-2.1.1. Open the project AS PClab1 by clicking on the file AS PClab1.Rproj. 
+
+Start by downloading and unzipping the file AS PClab1.zip from UFORA. Once you’ve done that, do the following exercises. 2.1.1. Open the project AS PClab1 by clicking on the file AS PClab1.Rproj.
+
 ```{r}
 
 ```
 
 2.1.2. Run the code in the file examplescript.R line by line. Check the value of the object aNumber
+
 ```{r}
 #-------------------------------------------
 # Example script
@@ -73,105 +74,136 @@ the_answer
 ```
 
 2.1.3. make a new script called lab1.R that you can use to solve the rest of the questions.
+
 ```{r}
 
 ```
 
 ### Exercise 3
+
 #### EXERCISES 3.1
-For these exercises you can take a look at cheat sheet C. 
+
+For these exercises you can take a look at cheat sheet C.
 
 3.1.1. Create a numeric vector 'size' and store the following numbers: 6.8, 6.5, 6.3, 6.7, 6.4, 6.1, 6.1, 6.2
+
 ```{r}
 size <- c(6.8, 6.5, 6.3, 6.7, 6.4, 6.1, 6.1, 6.2)
 ```
 
 3.1.2. Create a character vector 'sex' with 4 times the value “male” and 4 times the value “female”.
+
 ```{r}
 sex <- c(rep('male',4), rep('female',4))
 ```
 
 3.1.3. Create a vector called vecA containing the numbers 10 to 1000 in steps of 25.
 
-
-#### EXERCISES 3.2
-3.2.1. Combine the vectors size and sex from the previous exercises in a data frame called birds.
-```{r}
-size
-```
-
-3.2.2. Take a look at the structure of the object (see cheat sheet D for the relevant function).Can you interprete the output?
-
 ```{r}
 vecA <- seq(10,1000,25)
-# vecA[length(vecA)]
 ```
 
+#### EXERCISES 3.2
+
+3.2.1. Combine the vectors size and sex from the previous exercises in a data frame called 'birds'.
+
+```{r}
+birds <- data.frame(size,sex)
+```
+
+3.2.2. Take a look at the structure of the object (see cheat sheet D for the relevant function).Can you interpret the output?
+
+```{r}
+str(birds)
+```
 
 #### EXERCISES 3.3
+
 In the RStudio project you’ll find a subfolder Data containing a few files. Use those to solve the following exercises. Keep in mind that you’ll have to mention the folder where the data can be found.
+
 3.3.1. Read in the file employeedata.csv and store it in an object called employees.
+
+```{r}
+read.csv('data\\employeedata.csv')
+```
+
+\*\*\*\* mydata object \*\*\*\* 3.3.2. Compare the object employees with the object mydata from the example above by looking at its structure. Are both objects identical? If not, what difference do you see?
+
 ```{r}
 
 ```
 
-3.3.2. Compare the object employees with the object mydata from the example above by looking at its structure. Are both objects identical? If not, what difference do you see? 
+3.3.3. Read in the file birds.RDS and store it as an object 'allbirds'.
+
 ```{r}
-
-```
-
-3.3.3. Read in the file birds.RDS and store it as an object allbirds.
-```{r}
-
+allbirds <- readRDS('data\\birds.rds')
 ```
 
 #### EXERCISES 3.4
-For these exercises, take a look at the cheat sheets E and F.
-3.4.1. Select the variabele location from allbirds and store this as the object loc. 
-```{r}
 
+For these exercises, take a look at the cheat sheets E and F. 3.4.1. Select the variabele location from allbirds and store this as the object loc.
+
+```{r}
+loc <- allbirds['location']
 ```
 
 3.4.2. Convert the vector loc to a factor. Don’t forget to store your result, otherwise loc won’t change!
-```{r}
 
+```{r}
+loc <- as.factor(loc)
+str(loc)
 ```
 
-3.4.3. Convert the variable agecat in the data frame allbirds to a factor. 
-```{r}
+3.4.3. Convert the variable agecat in the data frame allbirds to a factor.
 
+```{r}
+str(allbirds$agecat)
+allbirds$agecat <- as.factor(allbirds$agecat)
+str(allbirds$agecat)
 ```
 
 3.4.4. Read in the the data file birds2000.csv in such a way that all character vectors are factors. Store as the data frame birds2000.
-```{r}
 
+```{r}
+birds2000 <- read.csv('data\\birds2000.csv')
 ```
 
 ### Exercise 4
-EXERCISES 4.1
-For these exercises, check cheat sheets F, G H. 4.1.1. Calculate the mean length of the birds in the data frame birds2000. 
-4.1.2. Calculate the mean length of the birds in the data frame allbirds.
-```{r}
 
+EXERCISES 4.1 For these exercises, check cheat sheets F, G H. 4.1.1. Calculate the mean length of the birds in the data frame birds2000.
+
+```{r}
+mean(birds2000$length)
+```
+
+4.1.2. Calculate the mean length of the birds in the data frame allbirds.
+
+```{r}
+mean(allbirds$length, na.rm = TRUE)
 ```
 
 4.1.3. The measurement tool in 2000 had an error and measured 0.1 cm too much. Correct the lengths in the data frame birds2000.
-```{r}
 
+```{r}
+# compare_length <- birds2000$length
+birds2000$length <- birds2000$length - 0.1 #assuming measures are in cm 
 ```
 
 4.1.4. Make a new data frame young2000 that only contains the young birds from the data frame birds2000.
-```{r}
 
+```{r}
+young2000 <- birds2000[birds2000$agecat == 'young', ]
 ```
 
-4.1.5. Hard: Make a new data frame short that only contains birds from the data frame allbirds with a length smaller than 6.2 cm. Think about how you deal with missing values ( you find a useful function in cheat sheet H. )
-```{r}
+4.1.5. Hard: Make a new data frame `short` that only contains birds from the data frame allbirds with a length smaller than 6.2 cm. Think about how you deal with missing values ( you find a useful function in cheat sheet H. )
 
+```{r}
+allbirds[which(allbirds$length < 6.2), ]
 ```
 
-4.1.6. Hard: Add a variable centered to the data frame allbirds that contains for each bird the difference between the length and the average length of the birds in that data frame. Use the correct argument to ignore the missing values (see cheat sheet G) !
+4.1.6. Hard: Add a variable centered to the data frame `allbirds` that contains for each bird the difference between the length and the average length of the birds in that data frame. Use the correct argument to ignore the missing values (see cheat sheet G) !
+
 ```{r}
-
+allbirds$mean_len_diff <- allbirds$length - mean(allbirds$length, na.rm = TRUE)
+allbirds
 ```
-
