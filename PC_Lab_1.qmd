@@ -47,29 +47,30 @@ Start by downloading and unzipping the file AS PClab1.zip from UFORA. Once youâ€
 2.1.2. Run the code in the file examplescript.R line by line. Check the value of the object aNumber
 
 ```{r}
-#-------------------------------------------
-# Example script
-# PC lab 1 - Applied Statistics
-#-------------------------------------------
-
-sometext <- "THis is an example of text. Watch the quotation marks."
-aNumber <- 42
-
-lognum <- log(aNumber)
-
-pretext <- "The log of the answer to everything is:"
-
-# Now I combine the logarithm with the pretext
-lognum + pretext
-
-# Can you see why this doesn't work? 
-# There's a better way to do this : 
-the_answer <- paste(pretext, lognum)
-
-# Get a new number
-aNumber <- 22
-# Show the answer
-the_answer
+# 
+# #-------------------------------------------
+# # Example script
+# # PC lab 1 - Applied Statistics
+# #-------------------------------------------
+# 
+# sometext <- "THis is an example of text. Watch the quotation marks."
+# aNumber <- 42
+# 
+# lognum <- log(aNumber)
+# 
+# pretext <- "The log of the answer to everything is:"
+# 
+# # Now I combine the logarithm with the pretext
+# lognum + pretext
+# 
+# # Can you see why this doesn't work? 
+# # There's a better way to do this : 
+# the_answer <- paste(pretext, lognum)
+# 
+# # Get a new number
+# aNumber <- 22
+# # Show the answer
+# the_answer
 
 ```
 
@@ -199,11 +200,14 @@ young2000 <- birds2000[birds2000$agecat == 'young', ]
 
 ```{r}
 allbirds[which(allbirds$length < 6.2), ]
+
 ```
 
 4.1.6. Hard: Add a variable centered to the data frame `allbirds` that contains for each bird the difference between the length and the average length of the birds in that data frame. Use the correct argument to ignore the missing values (see cheat sheet G) !
 
 ```{r}
 allbirds$mean_len_diff <- allbirds$length - mean(allbirds$length, na.rm = TRUE)
+
+allbirds[, c(1,2,5,3,4)]
 allbirds
 ```
