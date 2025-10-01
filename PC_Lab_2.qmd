@@ -1,0 +1,160 @@
+---
+title: "PC_Lab_2"
+author: "CS"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+```{r setup}
+grains <- read.csv("data//grains.csv",
+                    stringsAsFactors = FALSE)
+survey <- read.csv("data//surveyAS2008.csv",
+                    stringsAsFactors = FALSE)
+library(ggplot2)
+```
+
+### EXERCISES 2.1
+For the exercises in this PC lab we will use the Student survey data presented in the first section.
+Load this function using the read.csv function (similar as for the grains data).
+2.1.1. Make a frequency table of the gender of participants of this survey.
+```{r}
+table(survey$gender)
+```
+
+2.1.2. For the loaded surveyAS2008 data calculate the average age as well as the standard deviation and variance for the age variable. Do this only for the female participants of
+this survey.
+```{r}
+f_only <- survey[which(survey$gender == 'female'),]
+mean(f_only$age)
+sd(f_only$age)
+var(f_only$age)
+```
+
+2.1.3. Calculate the median travelling distance for all participants of the survey. Additionally, calculate all decile (i.e. 10% quantiles) borders for the travelling distance.
+```{r}
+median(survey$distance)
+quantile(survey$distance,
+         probs = c(seq(0,1, by = 0.1)))
+```
+
+### EXERCISES 2.2
+Try to obtain the most informative output for the student survey data.
+2.2.1. Reread the meaning of each variable in our student survey data. Combine this with the initial output of the summary function and output of the table function for specific columns to decide which columns should be converted to factors (i.e. grouping variables).
+```{r}
+str(survey)
+summary(survey)
+#table(survey)
+```
+gender, transport, 
+2.2.2. Calculate the summary statistics for all participants that commuted by foot
+```{r}
+survey_foot <- survey[which(survey$transport == 'foot'), ]
+summary(survey_foot)
+rm(survey_foot)
+```
+
+### EXERCISES 2.3
+Try to obtain the following multivariate summary statistics on the student survey data.
+
+2.3.1. Construct the cross table indicating which ways of transports were used by different gender participants in the 2008 student survey data.
+```{r}
+table(survey$gender, survey$transport)
+```
+
+2.3.2. Is there a correlation between the distance different participants commute and the time they commute? Does this make sense?
+```{r}
+cor(survey$distance, survey$traveltime)
+#0.61
+```
+There is a moderate to strong correlation between commute distance and commute time. There is no accommodation for the different types of transport (walking vs biking etc)
+
+2.3.3. Construct the covariance matrix for all numerical variables in the dataset (distance,traveltime, coffee and sports)
+```{r}
+survey_cov <- survey[c('distance', 'traveltime', 'coffee','sports')]
+
+cov(survey_cov)
+```
+
+### EXERCISES 3.1
+Use the survey dataset to solve the following questions.
+3.1.1. Make a scatterplot where you plot the travel time in function of the distance the student lives from campus. Do you think this is a good plot? Why/why not?
+```{r}
+ggplot(survey, aes(distance, traveltime)) +
+  geom_point()
+```
+It would be improved if we could differentiate method of travel as well.
+
+3.1.2. Add a trendline to the previous plot.
+```{r}
+ggplot(survey, aes(distance, traveltime)) +
+  geom_point() +
+  geom_smooth()
+```
+
+3.1.3. Make a barplot where you show the amount of students for each mode of transportation.Make separate bars with a different color for each gender.
+```{r}
+ggplot(survey) +
+  geom_bar(aes(x = transport,
+           fill = gender),
+           position = 'dodge')
+```
+
+
+### EXERCISES 3.2
+Use the survey dataset to solve the following questions.
+3.2.1. Make a histogram for the variable age with 5 bins.
+```{r}
+ggplot(survey) +
+  geom_histogram(aes(age),
+                 bins = 5)
+```
+
+3.2.2. Make a plot where you show the number of observations for every individual age.
+```{r}
+ggplot(survey) +
+  geom_bar(aes(x = age))
+```
+
+Compare this one to the previous plot. Which plot would you prefer and why?
+I think reading the number of people who are in each age would be easiest on a table. The histogram with five bins does not allow high resolution of data.
+
+3.2.3. Compare the distribution of traveltime between the different modes of transport. Choose
+an appropriate plot type for this.
+```{r}
+ggplot(survey) +
+  geom_density(aes(x = traveltime, 
+                   group = transport,
+                   fill = transport),
+               alpha = 0.5)
+```
+
+3.2.4. Create a boxplot where you compare the differences in distribution within every mode of transport between both genders. Think of a suitable mapping. What do you notice on the plot? Can you explain this?
+```{r}
+ggplot(survey, aes(x = transport, y = traveltime, fill = transport)) +
+  geom_boxplot() +
+  geom_point(aes(color = gender))
+```
+
+
+3.2.5. Assess whether traveltime is distributed normally in the dataset using an appropriate
+plot. What would be your conclusion?
+```{r}
+ggplot(survey) +
+  geom_boxplot(aes(traveltime))
+
+ggplot(survey) +
+  geom_density(aes(traveltime))
+```
+The data appears mostly normal. There is a major peak around 20 minutes and a minor one around 50.
+
+3.2.6. Assess whether traveltime is distributed normally for every mode of transport, using an
+appropriate plot. What would be your conclusion this time?
+```{r}
+ggplot(survey) +
+  geom_density(aes(x = traveltime, 
+                   group = transport,
+                   fill = transport),
+               alpha = 0.5)
+```
+Bike, foot, and public transit all appear roughly normal. Bike and foot travel have minor peaks around 25 and 50 minutes.
