@@ -1,0 +1,208 @@
+---
+title: "Lab 4: Introduction categorical analysis"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+```
+
+## Notes
+###Comparing Multiple Proportions
+
+```{r}
+prop.test(x = c(15, 8), n = c(21, 19),
+alternative = "greater", correct = FALSE)
+
+# pval
+1-pnorm(sqrt(3.5098))
+
+# not returned pval
+1-pchisq(3.5098, df = 1)
+```
+
+### Goodness of Fit Test
+
+```{r}
+obs <- c(14,13,35,58) 
+obs_prop = obs/sum(obs)
+expected.p <- c(0.2, 0.15, 0.25, 0.4)
+chisq.test(obs, p = expected.p)
+```
+
+```{r}
+read.table(text = 'mealy pasty fibrous dense crunchy
+7 16 8 5 6
+11 18 6 7 3
+12 6 14 5 8', header = TRUE)
+
+tb <- matrix(c(7,16,8,5,6,
+11,18,6,7,3,
+12,6,14,5,8), nrow = 3, byrow = TRUE)
+
+chisq.test(tb)
+```
+
+## Case Studies
+
+For the case studies we ask you to perform the following steps:
+
+1\. translate the research question to a null and an alternative hypothesis
+
+2\. choose an appropriate test and evaluate whether the result from this test can be trusted
+
+3\. calculate the test statistic and corresponding p-value by carrying out the chosen test procedure in R.
+
+4\. Report your conclusion
+
+### Horse vaccines
+
+A company developed a new vaccine against the EHV1 virus in horses. The new vaccine is quite cheaper than the old one, and the company that produced it claims that it works as good as the more expensive old vaccine. Both vaccines were tested in a large study by the producer of the old vaccine. Of the *1100* horses vaccinated with the old vaccine, *15* got sick. Of the *1800* horses were vaccinated with the new vaccine, and *41* got sick.
+```
+H0: p(sick | new vaccine) == p(sick | old vaccine)
+H1: p(sick | new vaccine) != p(sick | old vaccine)
+
+Test: Proportion test for comparing two proportions
+```
+#### 1. CI of Vaccine Difference
+
+Compare both vaccines and report a confidence interval around the difference in proportion.
+
+```{r}
+sample_size = c(1100, 1800) #old, new
+sick = c(15,41) #old, new
+
+prop.test(x = sick, 
+          n = sample_size,
+          alternative = "two.sided", 
+          correct = FALSE)
+```
+
+#### 2. Claim Evaluation
+
+Do you think that the company proved their claim?
+
+```
+At a 5% significance level, we cannot support the alternative hypothesis that the proportions of sick horses are different. The p-val is greater than 0.05.(p-val: 0.08)
+```
+
+#### 3. Reasses with New Data
+
+The producer of the old vaccine received the results of 400 more horses, and 5 of those became sick. They now claim that their vaccine outperforms the new one. Check their claim.
+
+```{r}
+sample_size = c(1500, 1800) #old, new
+sick = c(20,41) #old, new
+
+prop.test(x = sick, 
+          n = sample_size,
+          alternative = "less", 
+          correct = FALSE)
+```
+```
+H0: the vaccines perform equally
+H1: old vaccine outperforms the new vaccine
+
+The alternative hypothesis is suported
+```
+### Earthworms
+
+In healthy soil about 75% of the earthworms are of the species L.terrestris, about 20% of the worms belong to the species L.rubellus and the rest are a mixture of different species. Researchers checked a soil on which they expect some contamination, and found 51 L. terrestris, 24 L.rubellus and 11 earthworms of other species. They claim this distribution deviates from the expected distribution on clean soil. Evaluate their claim.
+```
+H0: The true proportions of the described species follow the reccomended distribution
+
+H1: The true proportions of the described species differ from the reccomended distribution
+
+Test: Chi Squared: Goodness of fit test
+```
+```{r}
+p_expected <- c(0.75,0.20, 0.05) #LT, LR, other
+obs <- c(51,24,11)
+p_obs <- sample/sum(sample)
+
+# Goodness of fit test
+chisq.test(obs, p = p_expected)
+```
+
+```         
+At the 5% significance level we find enough evidence to conclude that the proportions of the species in the sample deviate meaningfully from the expected proportions (𝜒 2 = 15.953, 𝑝 = 0.0003434). The mixture does not match the expected composition.
+```
+```
+There is a warning on the output! The rule of thumb is that the expected number of observations must be larger than 5. The proportion of the number of unlisted species is less than 5. 
+```
+### Beagles
+
+About 90% of humans are right handed. Dog psychologists wonder whether this phenomenon also exist among beagles. At the faculty of veterenary medicine they examine 17 beagles to check whether they have a dominant side. They found that 12 beagles had a dominant right side and the other 5 a dominant left side. Evaluate statistically whether Beagles are predominantly right legged.
+
+```
+null: p(right legged)  == 0.5
+alt: p(right legged)  > 0.5
+
+
+```
+```{r}
+binom.test(12, n=17, p=0.5, alternative = "greater")
+```
+```
+the p-value for a binomial test is more than 0.05 (p-val: 0.071) so we cannot accept the alternative hypothesis. There is not enough evidence to claim that beagles are predominantly right-legged.
+```
+### Mediterranean diet
+
+In 2005 Trichopoulou et al tested the hypothesis that a mediterranean diet (lots of fish, olive oil, vegetables, fruit, …) would be beneficial for longevity. The group researched the relation between the age of dying of older Europeans as a function of their diet. They checked whether they had a *low, average or high* amount of Mediterranean items in their diet. An important covariant exists though, being the *smoking history*. If diet and smoking history are associated, smoking could act as a confounder.Read in the data from the file med_diet.csv and use the function table() to make a contingency table for the variables smoking and component. Is there a possibility that smoking is a confounder?
+
+```
+H0: there is no association between smoking and the ammount of medeteranian items in an individuals diet 
+H1: there is an association between smoking and the ammount of medeteranian items in an individuals diet
+
+test: chi squared
+```
+```{r}
+library(readr)
+med_diet <- read_csv("Data/med_diet.csv") |>
+  select(-1, -4)
+table(med_diet)
+
+chisq.test(table(med_diet))
+
+
+res <- chisq.test(table(med_diet))
+str(res) #looking at the expected values we can compare the results
+```
+This table has so much data that even though the difference between expected and observed values is small, the results are still significant. 
+```
+At the 5% significance level, there is enough evidence for an association between smoking and the ammount of mediteranian items in an individuals diet. (p-val = .00007)
+```
+### Coffee and alzheimer’s disease
+
+It is hypothesized that coffee could protect against dementia and alzheimer’s disease. In a group of nursing homes they recorded how much coffee the residents drank, and whether or not they developed alzheimer’s disease. They came to the following observations :
+
+```{r}
+tab <- 
+  read.table(
+    text = 'No_coffee little_coffee much_coffee
+            40 76 62
+            9 16 9', 
+    header = TRUE)
+
+rownames(tab) <- c('No Altz','Altz')
+tab
+```
+
+Do their observations support the claim that coffee could protect against the development of alzheimer’s?
+```
+H0: Coffee consumption is not associated with the       probability of developing alzheimers
+
+H1: Coffee consumption is associated with the development of alzheimers
+
+Test: chi squared test for the association between two variables
+```
+```{r}
+chisq.test(tab)
+```
+
+``` 
+At the 5% significance level, there is not enough evidence for an association between coffe drinking habits and developing alzheimers. The p-value of the chi squared test is less than 0.05 (p-val: 0.63).
+```
