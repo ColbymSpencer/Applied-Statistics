@@ -1,0 +1,289 @@
+---
+title: "PC Lab 5"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+## Class Notes
+
+```{r setup}
+library(tidyverse)
+```
+
+T-Test
+
+```{r}
+data(sleep)
+t.test(sleep$extra, 
+       mu = 2, 
+       alternative = 'greater')
+```
+
+Paired T-Test
+
+```{r}
+# data(sleep)
+group1 <- sleep$extra[sleep$group == 1]
+group2 <- sleep$extra[sleep$group == 2]
+difference <- group1-group2
+
+
+t.test(difference, mu = 0,
+       alternative = 'less')
+
+# same thing different format
+# order of inputs important
+t.test(group1, group2, paired = TRUE,
+       alternative = 'less')
+```
+
+are cars with an automatic gearbox heavier than those without
+
+```{r}
+data(mtcars)
+am <- mtcars$wt[mtcars$am == 0]
+#check normality
+qqplot(mtcars$wt)
+
+#view
+mtcars |>
+  ggplot(aes(sample = wt)) +
+  stat_qq() + stat_qq_line() +
+  facet_wrap(vars(am))
+
+var.test(wt ~ am, data = mtcars)
+
+t.test(wt ~ am, data = mtcars,
+       alternative = 'greater',
+       var.equal = TRUE # to not use welch correction
+       )
+
+t.test(wt ~ am, data = mtcars, # welch's t-test
+       alternative = 'greater')
+
+```
+
+## Exercises
+
+### 0.1. Sparrows
+
+The sparrows of Bumpus On the first of February 1898, a heavy storm passed over the region of Rhode Island. This storm had a massive impact on the local flora and fauna. A number of heavily injured birds was transported to the biological laboratory of Hermon Bumpus at Brown University, Rhode Island. Bumpus used this dataset to illustrate the theory on natural selection The sparrow dataset in this exercise is a subset of the original data and contains the following variables:
+
+-   beak.length: the length of the beak (in mm).
+
+-   status: indicates whether the bird died in the laboratory or survived (0: dead, 1: survived).
+
+-   age.class: indicates the age class (young/old).
+
+The researchers are interested if the beak length (beak.length) differs significantly between young and old sparrows.
+
+```         
+null: MEAN beak length does not differ between young and old sparrows
+alt: MEAN beak length differs between young and old sparrows
+
+test: unpaired t test
+```
+
+```{r}
+
+library(readr)
+sparrows <- read_csv("Data/sparrows.csv")
+```
+
+#### 1. Exploratory Analysis
+
+Perform an exploratory analysis to assess which assumptions hold or not for the part of the data in which the researchers are interested. Which of these assumptions can not be readily tested.
+
+```         
+samples are independent
+means are normally distributed
+for welch correction we must have the assumption of equal varaince between groups
+
+independent samples cannot be readily tested. Environmental factors may have influenced the results, ie the recent storm. Maybe some combination of age and/or beak length is less likley to be injured, therefore under-represented in the sample. Samples were brough in by people, so there could be a spatial bias for birds living in proximity to people.
+```
+
+```{r}
+sparrows |>
+  ggplot(aes(sample = beak.length)) +
+  stat_qq() + 
+  stat_qq_line(line.p = c(0.1,0.9)) + # default qqline can mislead
+  facet_wrap(vars(age.class))
+```
+
+```
+The qqplot for the distribution of beak length for each age group looks roughly normal.
+```
+
+#### 2. What test?
+
+Select an appropriate test to perform, and explain why this test is appropriate. Answer the research question and construct a statistically sound conclusion.
+```
+to determine if we use a welch correction, we must do an f test for equality of variance
+```
+```{r}
+var.test(sparrows$beak.length ~ sparrows$age.class)
+```
+```
+There is not enough edivence to show that the varainces in beak length varries between young and adult birds that were sampled.
+
+because variance is not significantly different between age groups, we do not use the welch's correction on our unpaired t test.
+```
+```{r}
+t.test(beak.length ~ age.class, data = sparrows,
+       alternative = 'two.sided',
+       var.equal = TRUE # to not use welch correction
+       )
+```
+```
+We cannot state that the true difference in means between group old and group young is significantly different. The p value(0.16) is greater than our alpha (0.05)
+```
+#### 3. Decision Errors
+
+Which type of decission errors can be made here? What can be done to control this type of decision errors?
+
+```         
+A decision error refers to a wrong conclusion in hypothesis testing, specifically a Type I error (a false positive, like rejecting a true null hypothesis) or a Type II error (a false negative, like failing to reject a false null hypothesis). 
+The probability of Type I error is equal to alpha. 
+The probability of Type II error is realted to the power of the test.
+
+In this case:
+Type I is erronously concluding that there is a difference in beak length between age groups.
+Type II is erroneously concluding that there is no difference in beak length between age groups.
+```
+
+#### 4. Repeated Sample, Different Conclusion
+
+Another team of researchers repeats the measurements with the same sample size. They obtain a p-value smaller than 0.04. Is this possible? Explain briefly. Can you comment on the probability with which this can occur? Explain clearly.
+
+```         
+A significant p-value is possible from reapted measurements with the same sample size. We are only 95% confident in our result, meaning that if the samples were taken 20 times, we would expect one of the samples to return as significant. 
+```
+
+### 0.2. Cortisol
+#### 1. Stress Indicator
+A company doctor would like to know if cortisol is a good indicator for stress. Therefore, he measured for each employee that visited the cortisol level in the saliva and asked whether the employee experienced stress during the execution of their job. The data he collected in this way, can be found in the file ‘cortisol.csv’. Research question: Is the cortisol level a good indicator for stress?
+
+```{r}
+# library(readr)
+cortisol <- read_csv("Data/cortisol.csv")
+```
+```
+H0: cortisol level is not significantly higher in stressed vs unstressed people
+HA: cortisol level is significantly higher in stressed vs unstressed people
+
+test: unpaired t-test
+
+are assumptions met?
+bias sources? only people who come into the doctor are tested. Higher stress among those who come in.
+``` 
+```{r}
+####  test assumptions ####
+# normality
+ggplot(data = cortisol, aes(sample = conc)) +
+  stat_qq() + stat_qq_line() +
+  facet_wrap(vars(group))
+# equal variance
+var.test(conc ~ group, data = cortisol) 
+
+#### test for significance ####
+# 
+t.test(conc ~ group, data = cortisol,
+alternative = "less", var.equal = TRUE)
+```
+
+#### 2.
+
+A consumer service wants to assess if the price class for a specific shoe brand is associated with the durability of the shoes. Therefore, they selected randomly ten athletes from different sport clubs in Flanders. Each individual gets a pair of shoes from the lower (type A) and the higher (type B) price class. Subsequently, for each individual and each pair of shoes the number of weeks until wear was recorded. The data are stored in the file ‘shoes.csv’ Research question: Is the average number of weeks until wear larger for expensive shoes compared to cheap shoes?
+
+```
+
+null:  the average number of weeks until wear is the same for expensive shoes and cheap shoes
+
+alt: the average number of weeks until wear is larger for expensive shoes compared to cheap shoes
+
+Test: paired t-test
+
+
+```
+```{r}
+shoes <- read_csv("Data/shoes.csv")
+
+t.test(shoes$shoeA, shoes$shoeB, paired = TRUE,
+        alternative = "less")
+```
+
+#### 3.
+
+Some scientists are convinced that the average number of kilocalories in hotdogs exceeds the 150 kcal. To investigate this, the number of kilocalories was measured for 54 randomly selected hotdogs. This data is available in the file ‘hotdog.csv’. Research question: Is the avarage amount of calories for hotdogs significantly larger than 150 kcal?
+```
+null:avg cal in hotdog  = 150 kcal
+alt: avg cal in hotdog > 150 kcal
+test: one sample t-test
+
+assumptions:
+different types of hotdogs (chicken, beef, etc) are not differentiated. The analysis is overgeneralized.
+```
+```{r}
+hotdogs <- read_csv("Data/hotdogs.csv")
+
+
+```
+
+#### 4.
+
+Researchers want to compare the reduction in cholesterol for two different diets: a diet based on beans and oats. A group of 40 test subjects is randomly divided over the two diets. Half of the individuals received the diet based on beans and the other half received the diet based on oats. For each individual the cholesterol value was measured before the start of the diet and 4 weeks into the diet, and the difference between both was noted as the variable ‘reduction’. The data is available in the file ‘cholesterol.csv’. Research question: Does the type of diet has an impact on the average reduction in cholesterol?
+```
+null: cholesterol reduction is not significantly different between bean and oat diets
+
+alt: cholesterol reduction is significantly different between bean and oat diets
+
+test: unpaired t-test
+
+assumption:
+
+```
+```{r}
+cholesterol <- read_csv("Data/cholesterol.csv")
+
+var.test(reduction ~ diet, data = cholesterol)
+```
+
+#### 5.
+
+The producer of measurement equipment claims its new device (device B) is more precise than its competitors device (device A). To prove this, they measured 10 samples for three different concentrations with both device A and device B. The data is available in the file ‘devices.csv’. Research question: Does device B measure concentrations more precise than device A?
+```
+Null: precision of a and b are the same
+
+Alt: b is more precise than a
+
+Test: variance test
+
+Terms:
+  Precise
+
+Assumptions: 
+```
+```{r}
+ devices <- read_csv("Data/devices.csv") |>
+  mutate(d_a = conc - deviceA,
+         d_b = conc - deviceB)
+
+var.test(devices$d_a, devices$d_b,
+         alternative = 'greater')
+```
+``` 
+a has a larger varaince than b
+```
+#### 6.
+
+Within the context of healthy nutrition, a consumers organisation claims that the amount of kilocalories of ‘light’ nutrition is higher than indicated on the food label. Therefore, they investigate 32 randomly chosen ‘light products’ and measure the difference, expressed in percentage, between the measured amount and the indicated amount of kilocalories on the labels. The data is available in the file ‘lightnutrition.csv’. Research question: Does the statement of the consumer organisation hold?
+```
+null:
+alt:
+test: unpaired t-test
+```
+```{r}
+ ltn <- read_csv("Data/lightnutrition.csv")
+```

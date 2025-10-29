@@ -1,0 +1,261 @@
+---
+title: "PC Lab 6"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+library(tidyverse)
+
+#import data
+forests <- read.csv('data/forests.csv',
+                   stringsAsFactors = TRUE)
+```
+
+```{r visual exploration}
+ggplot(forests, aes(x = biodiversity,
+                   y = carbon)) +
+  geom_point() +
+  stat_smooth(method = lm)
+```
+
+#### E1 Carbon \~ Bdv
+
+```{r}
+model1 <- lm(carbon ~ biodiversity, data = forests)
+coef(model)
+```
+
+1.  Write the estimated model equation for this model. $$ E(Y) = \beta_0 + \beta_{bdv}X_{bdv} $$ $$ \beta_0 ~= 58.2$$ $$\beta_{bdv} ~= 1.3$$
+2.  How do you interpret the estimated value of the coeﬀicient for biodiversity?
+
+```         
+For every 1 unit increase in biodiversity we expect a 1.3 unit increase in carbon
+```
+
+3.  How do you interpret the estimated value for the intercept?
+
+```         
+Without accounting for biodoversity, we expect a forest to have a carbon value of 58
+```
+
+#### E2 Carbon \~ Age
+
+```{r model 2}
+model2 <- lm(carbon ~ age, data = forests)
+coef(model2)
+contrasts(forests$age) #input must be factor
+# forest$age <- factor(forests$age, #factors can be reordered
+#                      levels = c('young', 'intermediate', 'old'))
+
+```
+
+1.  Write the theoretical model equation for this model. $$ E(Y) = \beta_0 + \beta_{age\_old}D_{age\_old} + \beta_{age\_young}D_{age\_young}  $$
+2.  How do you interpret the estimated value of the coeﬀicients for age?
+
+```         
+If a forest has an old age the carbon value is expected to be 18 carbon units higher; if young, we expect the carbon value to be 1.6 carbon units higher. 
+```
+
+3.  How do you interpret the estimated value for the intercept?
+
+```         
+```
+
+#### E3 Interactive Model carbon\~age\*bdv
+
+```{r}
+model3 <- lm(carbon ~ age + 
+                      biodiversity + 
+                      age:biodiversity, #interaction effect
+             data = forests)
+
+model3 <- # same model less typing
+  lm(carbon ~ age*biodiversity, 
+     data = forests)
+model3
+```
+
+1.  Write the estimated model equation for this model. $$ E(Y) = \beta_0 + \beta_{bdv}X_{bdv} + \beta_{old}D_{old} + \beta_{young}D_{young} + \beta_{bdv\_old}D_{old}X_{bdv}  +  \beta_{bdv\_young}D_{young}X_{bdv}$$
+2.  How do you interpret the estimated value of the coeﬀicients for the interaction term?
+
+```         
+the value we expect the carbon storage to increase if a dummy varaible is turned on, an X is turned on, or some combination.
+```
+
+3.  How do you interpret the estimated value for the intercept?
+
+```         
+If nothing is 'turned on' the we expect the carbon storage to be 59 units. This represents a forest of intermediate age without including a biodiversity score.
+```
+
+#### E4 CI, Predictions
+
+1.  Calculate a 90% confidence interval for the average carbon uptake of a young, intermediate, and old ecosystem based on model2.
+
+```{r}
+new <- data.frame(age = c('young', 'old', 'intermediate'))
+
+confint(model2,
+        newdata = new,
+        interval = 'confidence',
+        level = 0.9)
+```
+
+2.  Can you express the estimates as a function of the coeﬀicients of the model?
+
+```         
+On average, 90 % of the intervals I caclulate this way will contain the real value of the effect (beta)
+```
+
+3.  Calculate a 95% prediction interval for the carbon uptake of an individual old ecosystem with 27 species based on *model1*.
+
+```{r}
+new <- data.frame(biodiversity = 27, age = "old") # must specify every independent variable of this model
+
+predict(model1, 
+        newdata = new,
+        interval = 'prediction',
+        level = 0.95)
+```
+
+4.  Compare the result of the previous question with the prediction for a young ecosystem with 27 species and the prediction based on *model3*. Can you explain the differences?
+
+```{r}
+model3 <- # same model less typing
+  lm(carbon ~ age*biodiversity, 
+     data = forests)
+
+new <- data.frame(biodiversity = 27, age = "young") 
+
+predict(model3, 
+        newdata = new,
+        interval = 'prediction',
+        level = 0.9)
+```
+
+### CASE STUDIES
+
+In the following exercises, you will be provided with a dataset and some hypotheses from researchers. Use these hypotheses to set up the correct model and solve the questions accordingly.
+
+#### E5. Mulloway Growth
+
+Effect of Salinity on Juvenile Mulloway Researchers suspect that salinity affects the growth of juvenile mulloway 1 . To investigate this, 100 specimens were transferred into four 60 L aquariums filled with water of varying salinity. After 28 days, the growth rate for each fish was calculated. The data can be found in the file salinity.csv. This dataset contains the following variables:
+
+-   aquaria: a factor indicating the salinity of the aquariums (15, 20, 25, or 30 g/L).
+
+-   growth.rate: the calculated growth rate per fish.
+
+```{r import data}
+salinity <- read.csv('data/salinity.csv',
+                   stringsAsFactors = TRUE)
+```
+
+1.  Write down the theoretical model equation that corresponds to the researchers’ hypotheses. Ensure your notation is clear, and mention the coding of any dummy variables. $$ Expected Growth Rate = E(Y)  = \beta_0 + \beta_{aq20}D_{aq20}+\beta_{aq25}D_{aq25} + \beta_{aq30}D_{aq30}$$
+2.  Fit the model in R and write down the estimated model equation.
+
+```{r model5}
+model5 <- lm(growth.rate ~ aquaria, data = salinity)
+model5
+```
+
+$$Estimated Expected Growth Rate = \hat{Y}  = 2.6739 + 0.4135*D_{aq20}+-0.1079*D_{aq25} + -1.2726*D_{aq30} $$ 3. Provide the expected average growth of juvenile mulloway in water with a salinity of 20 g/L. Also, give a 95% confidence interval around your estimate.
+
+```{r}
+new <- data.frame(aquaria = 'Aq 20')
+
+predict(model5,
+        newdata = new,
+        interval = 'confidence',
+        level = 0.95)
+```
+
+#### E6. Concrete Strength
+
+Compressive strength (in MPa) is the compressive force that concrete can withstand before it breaks and depends on its composition. Previous research has shown that the amount of cement and water used has a significant impact on the final strength. Researchers suspect that the amount of fly ash used also affects compressive strength. In the dataset concrete.csv, you will find the following variables: - comp_strength: the measured compressive strength (in MPa) - Cement: the amount of cement used (in kg/m3) - Water: the amount of water used (in kg/m3) - FlyAsh: the amount of fly ash used (in kg/m3)
+
+```{r import data}
+concrete <- read.csv('data/concrete.csv')
+```
+
+1.  Write the estimated model equation for the correct model. 
+$$ Concrete Strength = E(Y)  = \beta_0 + \beta_{cement}X_{cement}+\beta_{water}X_{water} + \beta_{fly ash}X_{flyash}$$
+2.  Provide a correct interpretation of the various coeﬀicients in this model.
+
+```         
+for every unit increase in x_ingredient, we expect the associated effect size's change in concrete strength
+```
+
+3.  For a new bridge, a concrete mix was composed using 230 kg/m3 of cement, 160 kg/m3 of water, and 180 kg/m3 of fly ash. The engineers want to know the range within which the compressive strength of this concrete lies. The interval should have a 99% confidence level.
+
+```{r}
+model6 <- lm(comp_strength ~ Cement+Water+FlyAsh, data = concrete)
+model6
+
+new <- data.frame(Cement = 230, 
+                  Water = 160, 
+                  FlyAsh = 180)
+predict(model6,
+        newdata = new,
+        interval = 'prediction',
+        level = 0.99)
+```
+
+#### E7. Nitrogen Fertilization
+
+Researchers want to know how strongly the amount of fertilization affects the yield of tomatoes. They expect a linear relationship between yield and the amount of nitrogen fertilization in kg/ha. Additionally, they suspect that the effect of fertilization differs for the three types of tomatoes studied. The data can be found in the file tomatoes.csv, which contains the following variables:
+
+-   fertilization: nitrogen fertilization in kg/ha
+-   type: the type of tomatoes (cherry, plum, or vine tomatoes)
+-   yield: the yield of the harvest in kg/ha
+
+```{r import data}
+tomatoes <- read.csv('data/tomatoes.csv',
+                     stringsAsFactors = TRUE)
+```
+
+1.  Write down the theoretical model equation. Don’t forget to include the coding for any dummy variables. 
+$$ Yield = E(Y) = \beta_0 + \beta_{plum}D_{plum} + \beta_{vine}D_{vine} + \beta_{fert}X_{fert} + interaction$$
+2.  Provide a correct and meaningful interpretation of the various coeﬀicients in the model.
+
+```         
+for every unit increase in X or presence of D associated with a Beta, we expect a change of Beta units in yield, holding all other values equal.
+
+The intercept cannot be interpreted because the data does not inlcude unfertilized fields. The lowest fertilizer value is 20 in our data. 
+```
+
+3.  Calculate the expected *average* yield for each variety at fertilization levels of 20kg/ha, 140kg/ha, and 260kg/ha. Also, report the relevant interval for each estimate with a 95% confidence level.
+
+```{r}
+model7 <- lm(yield ~ type * fertilizer, 
+             data = tomatoes)
+model7
+
+new <- data.frame(type = rep(c('plum','vine', 'cherry'),3), 
+                  fertilizer = c(20,20,20,140,140,140,260,260,260))
+new <- expand.grid(
+  fertilizer = c(20,140,260),
+  type = c('cherry', 'plum', 'vine')
+)
+
+predict(model7, 
+        newdata = new,
+        interval = 'confidence',
+        level = 0.95) |>
+  as.data.frame() |>
+  cbind(new) |>
+  select(type, fertilizer, 'prediction' = fit, lwr, upr)
+```
+
+4.  What is the probability that at least one of the calculated intervals does not contain the actual value for the population?
+```{r}
+1-0.95^9
+```
+
+5.  A local farmer wants to know how much yield his field of *vine* tomatoes will produce if he applies *400 kg/ha of nitrogen* to his field. Give him a reasonable answer to his question.
+```
+We cannot answer this because the values collected are not in the range of the question. Or model is not suitable.
+```
+
