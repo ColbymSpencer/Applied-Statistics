@@ -11,6 +11,48 @@ library(tidyverse)
 library(readr)
 ```
 
+## Datasets
+
+### NO2 Dataset Metadata
+
+In April 2017, the city council of Ghent introduced a new plan for traﬀic flow in the city. The next year the Flemish Environment Agency (Vlaamse Milieu Maatschappij or VMM) indeed found that the amount of nitrogen dioxide had seriously decreased. They measured the amount of NO2 (in 𝜇𝑔/𝑚 3 ) in April 2017 and April 2018 at all 70 air quality measurement points in Ghent. The data contains the following variables:
+
+-   street: indicates the street where the measuring device is located.
+
+-   NO2_2017: indicates the average 𝑁𝑂 2 concentration in April 2017 for that measurement point.
+
+-   NO2_2018: indicates the average 𝑁𝑂 2 concentration in April 2018 for that measurement point.
+
+```{r}
+no2 <- read_csv("Data/NO2_gent.csv")
+```
+
+### Abalone Dataset Metadata
+
+The next dataset originates from a study conducted in 1994 by the marine lab of Warwick Nash. They studied various characteristics of abalones (shellfish) in Tasmania, and used this dataset to investigate whether the age of an abalone can also be accurately predicted based on other body measurements instead of the time-consuming procedure of counting the number of growth rings 1 . The abalone dataset used in this lab contains the following variables :
+
+-   sex: indicates the sex of the abalones (M, F, and I (infant)).
+
+-   length: the length of the longest shell (mm).
+
+-   diameter: the diameter perpendicular to the length (mm).
+
+-   height: the height of the whole abalone (mm).
+
+-   weight.whole: the weight of the whole abalone (g).
+
+-   weight.shucked: the weight of the meat (g).
+
+-   weight.viscera: the weight of the viscera (g).
+
+-   weight.shell: the weight of the shell after drying (g).
+
+-   rings: indicates the age.
+
+```{r}
+abalone <- read_csv("Data/abalone.csv")
+```
+
 ## Exercise 1.1.
 
 Ash dieback is a fungal disease that has wrecked havoc among European ash trees, Fraxinus exelcior. This tree is economically quite important, as it strong but flexible wood is used in many applications. About 5% of the population however has a genetic mutation that makes them resistant to the fungal disease. A farmer planted 80 trees and is now worried.
@@ -20,37 +62,45 @@ n = 80 #number of trees
 pr = 0.05 #probability that a tree is resistant
 ```
 
-1.  What is the average amount of trees he can expect to lose to the disease? (Tip: look up how to calculate the average of the binomial distribution).
+#### 1. Expected Values
 
-''' If a tree not resistant, we assume a 100% mortality, else the tree will live '''
+What is the average amount of trees he can expect to lose to the disease? (Tip: look up how to calculate the average of the binomial distribution).
 
 ```{r}
 n*(1-pr)
 ```
 
-2.  What is the probability that at least 5 trees survive?
+#### 2. P(x\>5)
+
+What is the probability that at least 5 trees survive?
 
 ```{r}
 1-pbinom(4, n, pr)
 ```
 
-3.  What is the probability that no more than 3 trees survive?
+#### 3. P(x\<=3)
+
+What is the probability that no more than 3 trees survive?
 
 ```{r}
 pbinom(3, n, pr)
 ```
 
-4.  What is the probability that no tree survives?
+#### 4. P(No survivors)
+
+What is the probability that no tree survives?
 
 ```{r}
 dbinom(0,n,pr)
 ```
 
-5.  You make an important assumption while doing these calculations. Which one is that, and does it make sense to make that assumption here?
+#### 5. Assuptions
+
+You make an important assumption while doing these calculations. Which one is that, and does it make sense to make that assumption here?
 
 ```         
 - the fungal disesase is 100% fatal and that trees with resistance have 100% survival rate.
-- the model is the distribution
+- the model is the real distribution
 - the trees being resistant are independent events
 ```
 
@@ -63,59 +113,46 @@ mean <- 100
 sd <- 13
 ```
 
-1.  What percentage of the Belgian population has an IQ less than 90?
+#### 1. P(IQ\<90)
+
+What percentage of the Belgian population has an IQ less than 90?
 
 ```{r}
 pnorm(90, mean, sd)
 ```
 
-2.  What percentage of the Belgian population has an IQ greater than 133?
+#### 2. P(IQ\>133)
+
+What percentage of the Belgian population has an IQ greater than 133?
 
 ```{r}
 1-pnorm(133, mean, sd)
 pnorm(133, mean, sd, lower.tail = FALSE)
 ```
 
-3.  Between which two IQ scores does the IQ of the middle 80% of the population lie?
+#### 3. Quantile Interval
+
+Between which two IQ scores does the IQ of the middle 80% of the population lie?
 
 ```{r}
 qnorm(0.10, mean, sd)
 qnorm(0.90, mean, sd)
 ```
 
-4.  You meet a student in a café who claims to have an IQ of 150. Do you think that student is lying? Justify your answer.
+#### 4. P(IQ==150)
+
+You meet a student in a café who claims to have an IQ of 150. Do you think that student is lying? Justify your answer.
 
 ```{r}
 1-pnorm(150,mean, sd)
 pnorm(150,mean, sd, lower.tail = FALSE)
 ```
 
-BONUS: probability of someone having a low iq with the same probability
-
-```{r}
-prob <- pnorm(150,mean, sd, lower.tail = FALSE)
-qnorm(prob, mean, sd)
-```
-
 ## Exercise 1.3.
 
-### NO2 Dataset Metadata
+#### 1. Population vs Sample
 
-In April 2017, the city council of Ghent introduced a new plan for traﬀic flow in the city. The next year the Flemish Environment Agency (Vlaamse Milieu Maatschappij or VMM) indeed found that the amount of nitrogen dioxide had seriously decreased. They measured the amount of 𝑁𝑂 2 (in 𝜇𝑔/𝑚 3 ) in April 2017 and April 2018 at all 70 air quality measurement points in Ghent. The data contains the following variables: - street: indicates the street where the measuring device is located. - NO2_2017: indicates the average 𝑁𝑂 2 concentration in April 2017 for that measurement point. - NO2_2018: indicates the average 𝑁𝑂 2 concentration in April 2018 for that measurement point.
-
-```{r}
-no2 <- read_csv("Data/NO2_gent.csv")
-```
-
-### Abalone Dataset Metadata
-
-The next dataset originates from a study conducted in 1994 by the marine lab of Warwick Nash. They studied various characteristics of abalones (shellfish) in Tasmania, and used this dataset to investigate whether the age of an abalone can also be accurately predicted based on other body measurements instead of the time-consuming procedure of counting the number of growth rings 1 . The abalone dataset used in this lab contains the following variables 2 : - sex: indicates the sex of the abalones (M, F, and I (infant)). - length: the length of the longest shell (mm). - diameter: the diameter perpendicular to the length (mm). - height: the height of the whole abalone (mm). - weight.whole: the weight of the whole abalone (g). - weight.shucked: the weight of the meat (g). - weight.viscera: the weight of the viscera (g). - weight.shell: the weight of the shell after drying (g). - rings: indicates the age.
-
-```{r}
-abalone <- read_csv("Data/abalone.csv")
-```
-
-1.  Do these two datasets describe a population or a sample?
+Do these two datasets describe a population or a sample?
 
 ```         
 the NO2 dataset could be a sample or a population depending on what we are studying. For example, it could be a population for regulatory purposes.
@@ -123,14 +160,18 @@ the NO2 dataset could be a sample or a population depending on what we are study
 The abalone dataset is a sample. The population it samples could be defined in different ways - for example, all the abalones in Tasmania, all the abalones in the region they were collected, etc.
 ```
 
-2.  If the dataset describes a sample, what is the corresponding population?
+#### 2. Describe Populations
+
+If the dataset describes a sample, what is the corresponding population?
 
 ```         
 NO2: the distribution of NO2 in Ghent
 Abalone: All the abalones in tasmania in 1994, the region in 1994, the region, etc. Keep in mind that samples are temporal and they may not be representative at futher dates. In this case environmental conditions may have changed.
 ```
 
-3.  If the dataset describes a sample, determine the sample size.
+#### 3. Sample Size
+
+If the dataset describes a sample, determine the sample size.
 
 ```{r}
 nrow(no2)
@@ -138,13 +179,15 @@ nrow(abalone)
 ```
 
 ```         
-NO2 has 70 samples per year, totalling 140 samples over the two years.
+NO2 has 70 samples per year, totalling 140 samples over two years.
 Abalone sampled 4177 abalones.
 ```
 
 ## Exercise 1.4.
 
-### 1. Examine the distribution of the variable weight.whole using a histogram and a QQ plot. Do you think this variable follows a normal distribution?
+#### 1. Histogram and QQ Plot
+
+Examine the distribution of the variable weight.whole using a histogram and a QQ plot. Do you think this variable follows a normal distribution?
 
 ```{r}
 # Histogram
@@ -160,7 +203,9 @@ ggplot(data = abalone, aes(sample = weight.whole)) +
 the distribution of the histogram appears skewed right. The qq plot deviates from the qqline indicating a non-normal distribution.
 ```
 
-### 2. Repeat this for the variable rings from the abalone dataset and evaluate the distribution. What do you notice about the graphs?
+#### 2. Histogram and QQ Plot
+
+Repeat this for the variable rings from the abalone dataset and evaluate the distribution. What do you notice about the graphs?
 
 ```{r}
 # Histogram
@@ -173,7 +218,7 @@ ggplot(data = abalone, aes(sample = rings)) +
 ```
 
 ```         
-The histogram appears roughly normal. The qq plot shows a noticable difference from the qq-line around x=1.5
+The histogram appears roughly normal. The qq plot shows a noticable difference from the qq-line around x=1.5 indicating the distribution is not normal.
 ```
 
 ## Exercise 1.5.
@@ -184,7 +229,11 @@ You can create a variable `isinfant` that has a 1 for an infant abalone and a 0 
 abalone$isinfant <- abalone$sex == "I"
 ```
 
-Adapt the code in the previous two blocks to solve the following questions: \### 1. Create the distribution of the sample estimate for the proportion of infants in the population if you take a sample of 50 animals. What do you see compared to the estimates for $\pi_{old}$?
+Adapt the code in the previous two blocks to solve the following questions:
+
+#### 1. Sample Simulation
+
+Create the distribution of the sample estimate for the proportion of infants in the population if you take a sample of 50 animals. What do you see compared to the estimates for $\pi_{old}$?
 
 ```{r}
 sample_size = 50
@@ -200,7 +249,7 @@ ggplot(data = simul_df, aes(x=simulation)) +
   geom_histogram()
 ```
 
-### 2.
+#### 2. Simulations with larger sample sizes
 
 Do the same, but now for a sample of 150 animals. What do you notice?
 
@@ -218,7 +267,7 @@ ggplot(data = simul_df, aes(x=simulation)) +
   geom_histogram()
 ```
 
-### 3. Confidence Interval (sample distribution)
+#### 3. Confidence Interval (sample distribution)
 
 The simulated estimates for the proportion allow you to construct a 90% confidence interval. Calculate the values between which 90% of the simulated estimates lie. This gives you a 90% confidence interval around the proportion of infants in the population.
 
@@ -226,7 +275,7 @@ The simulated estimates for the proportion allow you to construct a 90% confiden
 quantile(simulation, probs = c(0.05,0.95))
 ```
 
-### 4. Confidence Interval (normal distribution)
+#### 4. Confidence Interval (normal distribution)
 
 You’ve seen in the theory that you can approach the exact distribution with the normal distribution if the sample size is large enough. Use this to calculate a 90% confidence interval around the proportion of infants.
 
@@ -239,7 +288,9 @@ qnorm(.95, mean, sd)
 
 ## Exercise 1.6.
 
-1.  Run the simulation for the variable weight.whole and inspect the distribution of the simulated means using a histogram and QQ plot. What do you observe?
+#### 1. simulation weight.hole
+
+Run the simulation for the variable weight.whole and inspect the distribution of the simulated means using a histogram and QQ plot. What do you observe?
 
 ```{r}
 # run simulation
@@ -259,7 +310,9 @@ ggplot(data = simul_df, aes(sample=simulation)) +
   geom_qq() + geom_qq_line()
 ```
 
-2.  Perform the simulation for the variable rings for different sample sizes. Take sample sizes of 10, 20, 50, and 100. Each time, examine the distribution of the sample means. What do you notice?
+#### 2. simulation rings
+
+Perform the simulation for the variable rings for different sample sizes. Take sample sizes of 10, 20, 50, and 100. Each time, examine the distribution of the sample means. What do you notice?
 
 ```{r custom function}
 # custom simulation function
@@ -290,50 +343,78 @@ simulate(100, abalone$rings)
 simulate(300, abalone$rings)
 ```
 
+```         
+The distribution of the sample means approaches a normal distribution when sample size gets sufficiently large. This corroberates the Central Limit Theorem
+```
+
 ## Exercise 1.7.
 
-### 1. Take a sample of 𝑛 = 40 from the abalone dataset and calculate the sample mean for the variable weight.whole.
+#### 1. Sample Mean
+
+Take a sample of 𝑛 = 40 from the abalone dataset and calculate the sample mean for the variable weight.whole.
 
 ```{r}
-sample_mean <- mean(sample(abalone$weight.whole,40))
+mean_sample <- mean(sample(abalone$weight.whole,40))
 ```
 
-### 2. Calculate the probability of obtaining a sample mean ̄ 𝑋 that is as large or larger than the sample mean you calculated. Remember, since you have the entire population, you can calculate 𝜇 and 𝜎 to standardize the distribution. Then, use the cumulative probability function of the standard normal distribution to solve this problem.
+#### 2. P(Sample mean)
+
+Calculate the probability of obtaining a sample mean ̄ 𝑋 that is as large or larger than the sample mean you calculated. Remember, since you have the entire population, you can calculate 𝜇 and 𝜎 to standardize the distribution. Then, use the cumulative probability function of the standard normal distribution to solve this problem.
 
 ```{r}
+mean_pop <- mean(abalone$weight.whole) 
+sd_pop <-  sd(abalone$weight.whole)
 
+#quartile sample mean
+quantile_sm <- qnorm(mean_sample, mean_pop, sd_pop) 
+
+1-pnorm(mean_sample, mean_pop, sd_pop)
 ```
 
-### 3. Take a sample of 𝑛 = 50 from the abalone dataset and calculate the sample mean and standard deviation for the variable rings. Suppose you don’t know the population mean 𝜇, but you believe it’s 8. Since you also don’t know 𝜎, use the sample standard deviation as an estimate for 𝜎. What is the probability of getting a sample mean that is as far or farther from 8, assuming the true population mean is 8?
+#### 3. Sample Standard Deviation
+
+Take a sample of 𝑛 = 50 from the abalone dataset and calculate the sample mean and standard deviation for the variable rings. Suppose you don’t know the population mean 𝜇, but you believe it’s 8. Since you also don’t know 𝜎, use the sample standard deviation as an estimate for 𝜎. What is the probability of getting a sample mean that is as far or farther from 8, assuming the true population mean is 8?
 
 ```{r}
-
+sample <- sample(abalone$rings, 50)
+mean_sample <- mean(sample)
+sd_sample <- sd(sample)
+mean_pop <- 8
+pnorm(mean_sample, mean_pop, sd_sample, lower.tail = FALSE)
 ```
 
-### 4. Based on your previous result, do you think the sample mean is likely to be 8?
+#### 4. P(sample mean == 8)
 
-```{r}
+Based on your previous result, do you think the sample mean is likely to be 8?
 
+```         
+it appears unlikley as the probability of the population mean being higher than the sample mean (assuming sample sd is the same as the population sd)
 ```
 
 ## Exercise 1.8.
 
-For all exercises where the NO 2 dataset is used, you may assume that the NO 2 values in Ghent follow a normal distribution. \### 1. The mayor claims that the average NO 2 concentration in 2017 was no higher than 41 𝜇𝑔/𝑚 3 . If that were true, what is the probability of observing the measured sample mean or a more extreme one?
+For all exercises where the NO 2 dataset is used, you may assume that the NO 2 values in Ghent follow a normal distribution. \#### 1. P(NO2 \> 41) The mayor claims that the average NO 2 concentration in 2017 was no higher than 41 𝜇𝑔/𝑚 3 . If that were true, what is the probability of observing the measured sample mean or a more extreme one?
 
 ```{r}
 
 ```
 
-### 2. Calculate the difference in NO 2 between 2017 and 2018 for each street in the dataset. What distribution does this difference follow?
+#### 2. Compare Distributions
+
+Calculate the difference in NO 2 between 2017 and 2018 for each street in the dataset. What distribution does this difference follow?
 
 ```{r}
 
 ```
 
-### 3. Calculate an interval for which you are 90% confident that it includes the (unknown) population mean difference.
+#### 3. 90% CI of Population Mean
+
+Calculate an interval for which you are 90% confident that it includes the (unknown) population mean difference.
 
 ```{r}
 
 ```
 
-### 4. Bonus: Consider the data in the dataset as the entire population. Run a simulation where you randomly select 15 differences from the data 5000 times, and calculate the interval from the previous question. For each of these intervals, check whether it contains the population mean difference. Then, calculate the proportion of intervals that do.
+#### 4. Bonus: How many CI's Contain Mean
+
+Consider the data in the dataset as the entire population. Run a simulation where you randomly select 15 differences from the data 5000 times, and calculate the interval from the previous question. For each of these intervals, check whether it contains the population mean difference. Then, calculate the proportion of intervals that do.

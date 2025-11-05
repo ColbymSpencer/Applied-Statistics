@@ -1,0 +1,268 @@
+---
+title: "PC_Lab_7"
+format: html
+editor: visual
+---
+
+### Class Notes
+
+```{r pacakges}
+#packages
+library(tidyverse)
+library(ggplot2)
+# QQplot
+# @param x : een lineair model
+QQplot <- function(x){
+  ggplot(data.frame(res = residuals(x)),
+         aes(sample=res)) +
+    stat_qq() + stat_qq_line()
+}
+
+# resplots
+residualplot <- function(x){
+  # Make a data frame with the correct values
+  res <- residuals(x)
+  rdf <- data.frame(
+    res = c(res, sqrt(abs(res))),
+    fit = rep(fitted(x), times = 2),
+    lab = rep(c("Residuals","sqrt(abs(Residuals))"),
+              each = length(res))
+  )
+
+  # Make the plot
+  ggplot(rdf, aes(x=fit, y=res)) +
+    geom_point() +
+    geom_smooth(method="gam", formula = y ~ s(x)) +
+    geom_smooth(method = "lm", col = alpha("red",0.5), se = FALSE) +
+    facet_wrap(vars(lab), 
+               ncol = 2,
+               scale = "free_y", labeller = label_parsed) +
+    labs(x = "Fitted values", y= "")
+}
+```
+
+```{r data}
+# import data
+forest <- read.csv('data/forests.csv',
+                   stringsAsFactors = TRUE)
+```
+
+```{r carbon_bdv}
+model <- lm(carbon~biodiversity + age, 
+            data = forest,
+            )
+model
+```
+
+Test Assumptions for Linear Model - Linearity: Residual vs Fitted - Independence of Residuals: Read study design - Homoscedasticity: Scale-Location graph, we expect a horizontal line - Normality of Residuals: QQ plot
+
+```{r}
+plot(model)
+
+# print the ones we care about
+op <- par(mfrow = c(1,3))
+plot(model, which = 1:3)
+par(op)
+```
+
+```{r}
+summary(model)
+```
+
+r-squared of 0.25 only suitable for hypothesis testing. R2 of 0.8 is the lowest to be useful for prediction.
+
+T distribution with 32 degrees of freedom
+
+Hypothesis with one beta -\> summary -\> check t test Hypothesis with more than one Beta -\> ANOVA
+
+```{r}
+redmodel <- lm(carbon ~ biodiversity,
+               data = forest)
+```
+
+H_0: \beta\_2 = \Beta\_3 = 0 H_A:
+
+def of freedom = number of observations - the number of parameters. Df = difference betweeen residual degrees of freedom. Models must be nested
+
+```{r}
+anova(redmodel, model)
+```
+
+Because p \> alpha, there is not enough evidence that carbon storage varries significantly between forests of different age
+
+### Exercises and Case Studies
+
+##### Exercise 0.1.
+
+Researchers want to know if the effect of biodiversity depends on the age of the ecosystem.
+
+1.  Provide the model equation for the model you can use to test this research question.
+
+    $Y_{reduced}  = B_0+B_{bdv}X_{bdv}+\beta_oD_o+\beta_yD_y$
+
+    $Y_{full}  = B_0+B_{bdv}X_{bdv} + \beta_oD_o+\beta_yD_y + \beta_{ox}D_oX_{bdv}+\beta_{yx}D_oX_{bdv}$
+
+2.  Write the research question as a formal hypothesis about the coeﬀicients of that model.
+
+    $H_0: B_o = B_y = 0$
+
+    $H_A:$ The effects of at least one age group are not zero
+
+3.  Conduct the analysis and write a statistically correct conclusion.
+
+```{r}
+fullmodel <- lm(carbon~ biodiversity + age + age:biodiversity,
+               data = forest)
+
+```
+
+| Test assumptions:
+| Linearity: The relationship between outcome 𝑌 and regressors $𝑋1$ *to* $𝑋_𝑘$ must be linear.
+| Independence of residuals: The measurements of one observation should not depend on another. This assumption is diﬀicult to evaluate and depends on the experimental design.
+| Homoscedasticity of residuals: The variance should remain constant across the regression.
+| Normality of residuals: The residuals must be normally distributed.
+
+```{r}
+plot(fullmodel)
+QQplot(fullmodel)
+residualplot(fullmodel)
+```
+
+| Linearity: residuals vs fitted is pretty linear
+| Independence of residuals: Unable to assess
+| Homoscedasticity of residuals: NOT MET. The scale location graph is not horizontal
+| Normality of residuals: the qq plot is good
+
+```{r}
+redmodel <- lm(carbon~ biodiversity + age,               
+               data = forest)
+
+anova(redmodel, fullmodel)
+```
+
+There is not enough evidence (F = 0.1976, P \> 0.05) to conclude at the 0.05 confidence level that age affects carbon storage in forests significantly.
+
+### Case Studies
+
+In the following cases, you will need to figure out which statistical procedure to use yourself. When asked to answer a research question, always follow these steps:
+
+-   Conduct exploratory data analysis (descriptive and visual).
+
+-   Choose a suitable regression model to test the research question.
+
+-   Note down the general model formula.
+
+-   Check the assumptions.
+
+-   Formulate 𝐻 0 and 𝐻 1 based on the research question (single/multiple).
+
+-   Set the significance level 𝛼.
+
+-   Perform appropriate statistical analysis and interpret the calculated statistics.
+
+-   Draw a statistically justified conclusion.
+
+We do not expect you to complete all cases during the practical. You can use the remaining exercises to prepare for the exam.
+
+### Reaction Speed
+
+Researchers want to investigate the effect of temperature and pH on the reaction speed of a certain enzyme. A trial was set up where the reaction speed was measured at different temperatures and pH levels. You can find the data in catalysis.csv. For this exercise, you may treat the pH value as a quantitative variable. The dataset contains the following variables:
+
+-   speed: measured reaction speed.
+
+-   ph: pH value.
+
+-   temp: measured temperature ( ∘ C).
+
+```{r}
+df <- read.csv('data/catalysis.csv',
+         stringsAsFactors = TRUE)
+
+```
+
+Exercise 0.2.
+
+1\. Researchers suspect that the effect of pH on the reaction speed depends on temperature. Answer this research question.
+
+```{r}
+model <- lm(speed ~ ph * temp, 
+            data = df)
+plot(model)
+```
+
+| The assumptions are met.
+| Linearity is supported by the horizontal residuals vs fitted graph.
+| Normality of residuals is supported by the QQ plot.
+| Homoscedasticity is supported by the horizontal scale-location graph.
+| Independence of residuals cannot be assessed without looking into experimental design. We will assume it is met to be able to get a solution.
+
+```{r}
+redmodel <- lm(speed ~ ph + temp, 
+               data = df)
+
+anova(model, redmodel)
+```
+
+| Because the p-value of the anova is less than 0.05, at the 0.05 confidence level we can reject the null hypothesis. Our results support that temperature has a significant effect on the reaction speed.
+
+2\. In a new experiment, different concentrations of the enzyme were also added. This data can be found in catalysis2.csv. Consider an additive model. Do you find this an informative model? Justify your answer.
+
+```{r}
+df <- read.csv('data/catalysis2.csv',
+         stringsAsFactors = TRUE)
+model <- lm(speed ~ ph + temp,
+            data = df)
+```
+
+| Test Assumptions
+
+| The assumptions are met.
+| Linearity is supported by the horizontal residuals vs fitted graph.
+| Normality of residuals is supported by the QQ plot.
+| Homoscedasticity is supported by the horizontal scale-location graph.
+| Independence of residuals cannot be assessed without looking into experimental design. We will assume it is met to be able to get a solution.
+
+```{r}
+QQplot(model)
+residualplot(model)
+```
+
+```{r}
+summary(model)
+```
+
+| The r-squared value fo the additive model is 0.87. This is high enough to test a null hypothesis and may be high enough to make predictions, depending on the need for accuracy. 
+
+3\. In a new experiment, different concentrations of the enzyme were also added. This data can be found in catalysisspeed2.csv. Consider an additive model. Do you find this an informative model? Justify your answer.
+
+```{r}
+df <- read.csv('data/catalysisspeed2.csv',
+         stringsAsFactors = TRUE)
+model <- lm(speed ~ ph + temp,
+            data = df)
+```
+
+4\. Continue with the new data. Consider a model with only pH as a predictor and a model with both pH and concentration as predictors. What do you observe? Can you explain this?
+
+```{r}
+model1 <- lm(speed ~ ph,
+             data = df)
+model2 <- lm(speed ~ ph + conc,
+             data = df)
+```
+
+| Test Assumptions:
+
+| The assumptions are met.
+| Linearity is supported by the horizontal residuals vs fitted graph.
+| Normality of residuals is supported by the QQ plot.
+| Homoscedasticity is supported by the horizontal scale-location graph.
+| Independence of residuals cannot be assessed without looking into experimental design. We will assume it is met to be able to get a solution.
+
+```{r}
+QQplot(model1)
+residualplot(model1)
+
+QQplot(model2)
+residualplot(model2)
+```

@@ -1,0 +1,274 @@
+---
+title: "NPE 3"
+format: html
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+NPE Quiz 3 - Hypothesis testing I002756A Applied Statistics
+
+3 Nov, 16:00-Sun, 9 Nov, 23:59 All learners
+
+Here you find the questions for the third non-periodic evaluation. To prepare for the test, look at the ***PC labs 4 and 5, and chapter 3*** of the theory. You have two attempts at this quiz, the highest score counts as your final score.
+
+Keep the following in mind:
+
+-   When asked to perform a test, you carry out the most appropriate test as covered in the material.
+
+-   Don't use any continuity correction, so don't forget to turn that off. - For some questions you'll have to calculate the test statistic and p-value manually. When doing so, pay attention to the sign of the test statistic.
+
+-   When doing calculations manually, use R and don't round your results in between. We allow small margins of error for rounding, but too much rounding will lead to deviations beyond the allowed margins.
+
+-   If the last digit of your answer is a 0, ANS might not allow you to type it. That is not a problem, it's added when checking your answer. If you insist, you can round to a higher amount of decimals or significant digits and give that as your answer. The system will do the rounding for you when comparing with the correct answer.
+
+Good luck!
+
+# Attempt 1
+
+#### 1 True False
+
+![](/Photos/NPE3%20Q1.png)
+
+Suppose we're interested to know that a population parameter $K$ equals some value $K_0$. We calculate a test statistic $S$ from the sample estimate $K$ to base our inference on. The larger $K$ is compared to $K_0$, the larger the value of $S$ becomes.
+
+The figure above shows the density distribution on which the test is based on. This distribution is one of those covered in the course, so the normal, T, chi squared or *F distribution*. The test value $S$ in shown in red, and the critical value(s) used for the inference in blue.
+
+![https://blog.minitab.com/en/blog/statistics-in-the-field/a-field-guide-to-statistical-distributions](/Photos/Distribution_Guide.png)
+
+**Indicate for every statement below whether it is consistent with the figure above (TRUE) or not (FALSE)**
+
+We do not have enough evidence to state that $K$ is equal to $K_0$
+
+| TRUE: The test value is less than the critical value - this means the test is significant? The null hypothesis is that $K=K_0$ is not supported.
+
+The test assumes that $K$ follows a $F$ distribution
+
+| Not Sure: The graph looks like an F distribution, but it could also be a chi-squared distribution.
+
+~~In this test the significance level~~ $\alpha$ ~~is set to 0.95~~
+
+| FALSE : The area under the curve to the right of the critical value is 0.95. This indicates that alpha is set to 0.05.
+
+The alternative hypothesis is $K < K_0$
+
+| TRUE: The graph shows that 95% of the estimated population is greater than the critical value. For a significant result supporting that $K<K_0$ we look for a test value below the critical value. TRUE
+
+We do not have enough evidence to state that $K$ is smaller than $K_0$
+
+| FALSE: At the 0.05 significance level, we have enough evidence to say that $K$ is smaller than $K_0$
+
+#### 2 Comparing More Than Two Populations
+
+| PC Lab 4 pg.6
+
+Fusarium wilt is an important fungal disease that wrecks havoc in banana plantations. Researchers are hunting for more resistant cultivars, and identified three possible candidates. They went to an area where wilt is a problem, and counted for each cultivar how many fields were infected and how many were not. The results are shown in the table below:
+
+|              | Cultivar 1 | Cultivar 2 | Cultivar 3 |
+|--------------|------------|------------|------------|
+| Infected     | 14         | 28         | 10         |
+| Not Infected | 23         | 10         | 8          |
+
+The researchers want to know whether any of these cultivars differs in susceptibility to the disease from the other ones. Use an appropriate test to evaluate their claim and report the requested values.
+
+$H_0: \pi_1 = \pi_2 = \pi_3$
+
+$H_A$ : At least two proportions differ
+
+Report the value of the test statistic you used, rounded to 3 decimals.
+
+```{r}
+x <- c(14,28,10)
+n <- c(37,38,18)
+
+test <- prop.test(x,n)
+test
+round(test[["statistic"]], 3)
+```
+
+Report the degrees of freedom for the distribution used as the probability model.
+
+```{r}
+test["parameter"]
+```
+
+Report the corresponding p-value rounded to 4 significant digits (0.0001457 is correct, 0.0001 is not!)
+
+```{r}
+signif(test[['p.value']], digits = 4)
+```
+
+Select the correct conclusion based on the test you reported. \> At the 1% significance level, we find proof for a significant difference in the proportion of affected fields between cultivars. The proportion of affected fields is estimated to be 38%, 74% and 56% for the different cultivars.
+
+#### 3 Tests for Data from a Normal Distribution
+
+| Lecture Notes Pg. 86
+
+To avoid overfertilization, farmers should only add extra potassium to their fields when the STK (soil test potassium) value of the soil is lower than a certain value. This value is determined to be 170 ppm for clay soils and *135 ppm for sandy soils*. A farmer has fields with *sandy soil*, and wants to know whether she needs to add extra potassium to her field. She measured the STK value at *11* different spots and found an average potassium value of *128.8* ppm with a standard deviation of *22.3* ppm. 
+
+$$ Potassium \sim N(128.8, 22.3)$$ 
+
+Use the most appropriate test to evaluate whether she has to add potassium to her field or not, assuming the STK values within a field are normally distributed.
+
+$H_0: \mu_{sample} = 135$ 
+
+$H_0: \mu_{sample} < 135$
+
+Report the value of the test statistic rounded to 3 decimals. Pay attention to the sign!
+
+![](/Photos/T%20Statistic%20Formula.png)
+
+```{r}
+x_bar <- 128.8
+s <- 22.3
+n <- 11
+mu_0 <- 135
+alpha = 0.1 # conclusion section of question
+
+t <- x_bar-mu_0/(s/sqrt(n))
+
+qt(alpha, 
+   df = n-1, 
+   lower.tail = TRUE)
+```
+
+Report the degrees of freedom for the distribution of the statistic.
+
+```{r}
+n-1
+```
+
+Report the corresponding p-value rounded to 4 significant digits (0.0001457 is correct, 0.0001 is not!)
+
+```{r}
+
+```
+
+Select the most appropriate conclusion.
+
+
+| At the 10% significance level,
+
+#### 4 Comparing Drought Effects
+
+A regional government claims they need more support because their region was more heavily impacted by a recent drought than the rest of the country. In order to investigate this, you did a survey among farmers. In total *95* farmers from that region answered, and *17 *of those reported negative impacts from the drought. Among *110* farmers from other parts of the country, *11* indicated they were negatively impacted by the drought. Use the most appropriate test to examine whether the claim of the regional government can be supported by this data.
+
+$$H_0:p_{region} = p_{country}$$
+$$H_A:p_{region} > p_{country}$$
+
+```{r}
+
+```
+
+Report the p-value of the most appropriate test up to 4 significant digits (0.0001457 is correct, 0.0001 is not!)
+
+```{r}
+
+```
+
+Select the appropriate conclusion from the options below.
+
+#### 5 Overferilization
+
+To avoid overfertilization, a regional government has set a limit on the amount of fertilizer that can be used. They suspect however that the fields in the valley have a different potassium content than those on the hills. To check this, they determined the STK (Soil Test Potassium) values for 11 fields in the valley and 12 fields in on the hillsides. They found a mean STK value of 149.8 ppm and a standard deviation of 20.6 ppm for the fields in the valley. The hillside fields had an average potassium content of 118.8 ppm with a standard deviation of 24.51 ppm. Assuming the potassium content of fields is normally distributed, use the most suitable test to evaluate the suspicion of the government.
+$$K_{valley} \sim N(149.8,20.6); n=11$$
+$$K_{hillshide} \sim N(118.8,24.51); n=12$$
+
+$H_0: p_{valley} = p_{hillside}$
+$H_1: p_{valley} \neq p_{hillside}$
+```{r}
+valley <- c(11, 149.8, 20.6)
+hillside <- c(12, 118.8, 24.51)
+
+names(valley) <- c('n','mean','sd')
+names(hillside) <- c('n','mean','sd')
+```
+
+Report the value of the statistic you used rounded up to 3 decimals.
+
+```{r}
+
+
+```
+
+Report the degrees of freedom for the distribution of your test statistic
+
+```{r}
+
+```
+
+Report the corresponding p-value rounded to 4 significant digits (0.0001457 is correct, 0.0001 is not!)
+
+```{r}
+
+```
+
+Select the correct conclusion.
+
+```{r}
+
+```
+
+#### 6 Paired or Unpaired
+
+Seaweed extract is said to improve the speed of photosynthesis in tomato plants. To determine whether this is true, researchers set up a series of experiments where they measure CO2 uptake using a standard CI-340 photosynthesis measurement tool.
+
+![Lecture Notes pg.112](Photos/Paired%20and%20Unpaired.png)
+
+Researchers divide 40 plants in two groups. Every plant is treated with two seaweed extracts, A and B. The first group gets extract A first, and two weeks later extract B. The second group gets B first and then A. For each seaweed formula, the difference in CO2 uptake before and one week after application of the treatment is measured. The differences are calculated and compared between both extracts.
+
+`My gut is telling me unpaired but each plant has multiple measurements.`
+
+The baseline CO2 uptake is measured for 40 plants. A week after treatment with seaweed extract the CO2 uptake is measured again. These results are then compared with the results before treatment.
+
+`Paired - two measures are taken for each study subject (plant)`
+
+Researchers put 40 plants each in a separate greenhouse on two different tomato farms, and the CO2 uptake is measured for every plant. In both of the greenhouses, seaweed extract was added for half of the plants. After one week, the CO2 uptake is measured again for every plant, and the difference before and after is calculated. These differences are then compared between plants with and those without added extract.
+
+`Paired - two measures are taken for each study subject (plant)`
+
+Researchers split 40 plants in two groups. One group is treated with a seaweed extract A, the other group with another formula, seaweed extract B. After a week CO2 uptake is measure in each plant, and uptake is compared between both groups.
+
+`Unpaired - only one observation is taken for each plant`
+
+#### 7 Soil Degradation
+
+To combat soil degradation, a regional government has decided that at least 35.0 % of fields have to be converted to agroforestry. You received complaints that a large farmer didn't convert enough fields. You go out and check 20 of his fields, and find that 4 were converted to agroforestry. Use the most appropriate test to evaluate whether you can prove that the farmer didn't do enough. Report the p-value rounded to 4 significant digits (0.0001457 is correct, 0.0001 is not!)
+
+```{r}
+p_0 <- 0.35
+p_t <- 4/20
+
+```
+
+Select the correct conclusion based on your result.
+
+```{r}
+
+```
+
+#### 8 Welch's two-sample T-test Assumptions
+
+Select all assumptions of the Welch's two-sample T-test.
+
+The mean difference $\bar{\Delta}$ with $\Delta = X_A-X_B$ is normally distributed
+
+~~Both samples come from populations with equal variance~~
+
+> In contrast with the previous section, the assumption that $\delta^2_X = \delta^2_𝑌$ does not have to hold necessarily. Lecture Notes pg.121
+
+Both samples are drawn from populations with different variances
+
+| "This test can be used when the p-value for the F test of the null hypothesis $𝐻0 ∶\delta^2_𝑋 =\delta^2_𝑌$ is smaller than the chosen significance level 𝛼."
+| - Lecture Notes pg121
+| If the variances are not significantly different, we should use an unpoaired t-test not a welchs test.
+
+~~The difference between population means~~ $\mu_A-\mu_B = 0$
+
+> "Similarly as for the student’s t-test, the difference $\bar{X} - \bar{Y}$ is considered to test the null hypothesis $H_0 ∶\mu_X =\mu_Y$ for an equality of expectation values."
+>
+> \- Lecture Notes pg.122
+>
+> This is the null hypothesis for a Welch's test but not an assumption.
+
+None of the above are assumptions of the Welch's two-sample T-test
