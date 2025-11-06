@@ -40,11 +40,11 @@ The figure above shows the density distribution on which the test is based on. T
 
 We do not have enough evidence to state that $K$ is equal to $K_0$
 
-| TRUE: The test value is less than the critical value - this means the test is significant? The null hypothesis is that $K=K_0$ is not supported.
+| TRUE: The test value is less than the critical value on a left tailed test. We reject the null hypothesis.
 
 The test assumes that $K$ follows a $F$ distribution
 
-| Not Sure: The graph looks like an F distribution, but it could also be a chi-squared distribution.
+| Not Sure: The graph looks like an F distribution, but it could also be a chi-squared distribution. The photo name is F
 
 ~~In this test the significance level~~ $\alpha$ ~~is set to 0.95~~
 
@@ -103,14 +103,15 @@ Select the correct conclusion based on the test you reported. \> At the 1% signi
 #### 3 Tests for Data from a Normal Distribution
 
 | Lecture Notes Pg. 86
+| Hypothesis Testing Slide 25
 
-To avoid overfertilization, farmers should only add extra potassium to their fields when the STK (soil test potassium) value of the soil is lower than a certain value. This value is determined to be 170 ppm for clay soils and *135 ppm for sandy soils*. A farmer has fields with *sandy soil*, and wants to know whether she needs to add extra potassium to her field. She measured the STK value at *11* different spots and found an average potassium value of *128.8* ppm with a standard deviation of *22.3* ppm. 
+To avoid overfertilization, farmers should only add extra potassium to their fields when the STK (soil test potassium) value of the soil is lower than a certain value. This value is determined to be 170 ppm for clay soils and *135 ppm for sandy soils*. A farmer has fields with *sandy soil*, and wants to know whether she needs to add extra potassium to her field. She measured the STK value at *11* different spots and found an average potassium value of *128.8* ppm with a standard deviation of *22.3* ppm.
 
-$$ Potassium \sim N(128.8, 22.3)$$ 
+$$ Potassium \sim N(128.8, 22.3); n=11$$
 
 Use the most appropriate test to evaluate whether she has to add potassium to her field or not, assuming the STK values within a field are normally distributed.
 
-$H_0: \mu_{sample} = 135$ 
+$H_0: \mu_{sample} = 135$
 
 $H_0: \mu_{sample} < 135$
 
@@ -146,15 +147,13 @@ Report the corresponding p-value rounded to 4 significant digits (0.0001457 is c
 
 Select the most appropriate conclusion.
 
-
 | At the 10% significance level,
 
 #### 4 Comparing Drought Effects
 
-A regional government claims they need more support because their region was more heavily impacted by a recent drought than the rest of the country. In order to investigate this, you did a survey among farmers. In total *95* farmers from that region answered, and *17 *of those reported negative impacts from the drought. Among *110* farmers from other parts of the country, *11* indicated they were negatively impacted by the drought. Use the most appropriate test to examine whether the claim of the regional government can be supported by this data.
+A regional government claims they need more support because their region was more heavily impacted by a recent drought than the rest of the country. In order to investigate this, you did a survey among farmers. In total *95* farmers from that region answered, and *17* of those reported negative impacts from the drought. Among *110* farmers from other parts of the country, *11* indicated they were negatively impacted by the drought. Use the most appropriate test to examine whether the claim of the regional government can be supported by this data.
 
-$$H_0:p_{region} = p_{country}$$
-$$H_A:p_{region} > p_{country}$$
+$$H_0:p_{region} = p_{country}$$ $$H_A:p_{region} > p_{country}$$
 
 ```{r}
 
@@ -170,12 +169,10 @@ Select the appropriate conclusion from the options below.
 
 #### 5 Overferilization
 
-To avoid overfertilization, a regional government has set a limit on the amount of fertilizer that can be used. They suspect however that the fields in the valley have a different potassium content than those on the hills. To check this, they determined the STK (Soil Test Potassium) values for 11 fields in the valley and 12 fields in on the hillsides. They found a mean STK value of 149.8 ppm and a standard deviation of 20.6 ppm for the fields in the valley. The hillside fields had an average potassium content of 118.8 ppm with a standard deviation of 24.51 ppm. Assuming the potassium content of fields is normally distributed, use the most suitable test to evaluate the suspicion of the government.
-$$K_{valley} \sim N(149.8,20.6); n=11$$
-$$K_{hillshide} \sim N(118.8,24.51); n=12$$
+To avoid overfertilization, a regional government has set a limit on the amount of fertilizer that can be used. They suspect however that the fields in the valley have a different potassium content than those on the hills. To check this, they determined the STK (Soil Test Potassium) values for 11 fields in the valley and 12 fields in on the hillsides. They found a mean STK value of 149.8 ppm and a standard deviation of 20.6 ppm for the fields in the valley. The hillside fields had an average potassium content of 118.8 ppm with a standard deviation of 24.51 ppm. Assuming the potassium content of fields is normally distributed, use the most suitable test to evaluate the suspicion of the government. $$K_{valley} \sim N(149.8,20.6); n=11$$ $$K_{hillshide} \sim N(118.8,24.51); n=12$$
 
-$H_0: p_{valley} = p_{hillside}$
-$H_1: p_{valley} \neq p_{hillside}$
+$H_0: p_{valley} = p_{hillside}$ $H_1: p_{valley} \neq p_{hillside}$
+
 ```{r}
 valley <- c(11, 149.8, 20.6)
 hillside <- c(12, 118.8, 24.51)
