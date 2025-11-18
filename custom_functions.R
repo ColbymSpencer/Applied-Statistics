@@ -1,7 +1,7 @@
 ## Custom Functions
 
 print_equation <- function(model, 
-                           round_to = 3, beta = 'ß_'){
+                           round_to = 3, beta = 'Beta_'){
   
   n <- names(coef(model)) #model var names
   nums <- round(coef(model), round_to) # effect values
@@ -16,7 +16,7 @@ print_equation <- function(model,
   
   eq <- gsub('\\*\\(Intercept\\)','', eq) # remove the intercept variable name
   eq <- gsub(' \\+ -',' - ', eq) # reformat the negative numbers
-  filled_eq <- paste0('Y_hat = ',eq)
+  filled_eq <- paste0('E(Y) = ',eq)
   
   
   ## unfilled equation
@@ -29,9 +29,15 @@ print_equation <- function(model,
   
   eq <- gsub('\\*\\(Intercept\\)','', eq) # remove the intercept variable name
   eq <- gsub(' \\+ -',' - ', eq) # reformat the negative numbers
-  unfilled_eq <- paste0('Y_hat = ',eq)
+  unfilled_eq <- paste0('E(Y) = ',eq)
   
   return(c(filled_eq, unfilled_eq))
+}
+
+assumption_plots <- function(model) {
+  op <- par(mfrow = c(1,3))
+  plot(model, which = 1:3)
+  par(op)
 }
 
 
