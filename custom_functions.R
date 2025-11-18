@@ -1,7 +1,7 @@
 ## Custom Functions
 
 print_equation <- function(model, 
-                           round_to = 3, beta = 'Beta_'){
+                           round_to = 3, beta = 'ß_'){
   
   n <- names(coef(model)) #model var names
   nums <- round(coef(model), round_to) # effect values
