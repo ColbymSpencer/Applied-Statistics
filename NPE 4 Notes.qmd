@@ -1,0 +1,64 @@
+---
+title: "NPE 4 Notes"
+format: html
+editor: visual
+---
+
+Informative = r-squared value
+
+𝛽
+
+#### Assumptions for a Linear Model:
+
+-   Linearity: Residual vs Fitted; no pattern
+
+-   Independence of Residuals: Read study design
+
+-   Homoscedasticity: Scale-Location graph, we expect a horizontal line
+
+-   Normality of Residuals: QQ plot is linear
+
+Based on the description of the data we have no reason to suspect a dependency\
+between the observations, but we do not have enough information to be sure that\
+the observations are independent. The diagnostic plots don’t point to a clear\
+violation of the assumptions. The residuals appear approximately normal on a QQ\
+plot, and neither the residual plot nor the scale-location plot show any clear trend.
+
+#### Example Conclusions
+
+At the 5% significance level we cannot find enough evidence for an interaction between pH and temperature (𝑇𝑑𝑓∶121 = 0.061, p = 0.952). Based on this sample we cannot prove that the effect of pH would change when the temperature changes.
+
+At the 5% significance level we don’t find enough evidence to conclude that the effect of biodiversity differs between forests of a different age (𝐹𝑑𝑓∶2,30 = 0.198, p = 0.822).
+
+#### Template
+
+```{r}
+# remove all objects except functions
+rm(list = setdiff(ls(), lsf.str())) 
+
+# import data
+dat <- read.csv('',
+            stringsAsFactors = TRUE)
+names(dat)
+
+# make model
+model <- lm(,
+            data = dat)
+print_equation(model, beta  = '𝛽')
+
+# test assumptions
+assumption_plots(model)
+residualplot(model)
+QQplot(model)
+
+# evaluate model
+summary(model)
+anova(model_reduced, model)
+
+# make predictions
+# newdat <- data.frame()
+predict(model, 
+        newdata = newdat,
+        level = 0.95,
+        interval = 'prediction'or 'confidence')
+```

@@ -4,6 +4,7 @@ print_equation <- function(model,
                            round_to = 3, beta = 'Beta_'){
   
   n <- names(coef(model)) #model var names
+  n <- gsub(' ', '', n)
   nums <- round(coef(model), round_to) # effect values
   zipped <- c() #placeholder
   
@@ -16,6 +17,7 @@ print_equation <- function(model,
   
   eq <- gsub('\\*\\(Intercept\\)','', eq) # remove the intercept variable name
   eq <- gsub(' \\+ -',' - ', eq) # reformat the negative numbers
+  eq <- gsub(':','*', eq) # interactions
   filled_eq <- paste0('E(Y) = ',eq)
   
   
@@ -29,6 +31,7 @@ print_equation <- function(model,
   
   eq <- gsub('\\*\\(Intercept\\)','', eq) # remove the intercept variable name
   eq <- gsub(' \\+ -',' - ', eq) # reformat the negative numbers
+  eq <- gsub(':','*', eq) # interactions
   unfilled_eq <- paste0('E(Y) = ',eq)
   
   return(c(filled_eq, unfilled_eq))
