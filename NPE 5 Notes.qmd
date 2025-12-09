@@ -1,0 +1,79 @@
+---
+title: "NPE 4 Notes"
+format: html
+editor: visual
+---
+
+Informative = r-squared value
+
+𝛽
+
+#### Assumptions for a Linear Model:
+
+-   Linearity: Residual vs Fitted; no pattern
+
+-   Independence of Residuals: Read study design
+
+-   Homoscedasticity: Scale-Location graph, we expect a horizontal line
+
+-   Normality of Residuals: QQ plot is linear
+
+A qq plot of the residuals shows no clear deviation from normality.
+
+The fitted vs residuals plot confirms that the linearity assumption is defendable.
+
+The scale location plot shows variance increases with increasing predicted values.
+
+From the study design, there is dependency between residuals due to (spatial/ temporal/ interaction).
+
+Hence we should be cautious with inference and intervals based on this model, as the probability model cannot be guaranteed to be reasonable.
+
+#### Example Conclusions
+
+At the 5% significance level we cannot find enough evidence for an interaction between pH and temperature (𝑇𝑑𝑓∶121 = 0.061, p = 0.952). Based on this sample we cannot prove that the effect of pH would change when the temperature changes.
+
+At the 5% significance level we don’t find enough evidence to conclude that the effect of biodiversity differs between forests of a different age (𝐹𝑑𝑓∶2,30 = 0.198, p = 0.822).
+
+#### Template
+
+```{r}
+# remove all objects except functions
+rm(list = setdiff(ls(), lsf.str())) 
+
+# import data
+dat <- read.csv('',
+            stringsAsFactors = TRUE)
+names(dat)
+
+# make model
+model <- lm(,
+            data = dat)
+print_equation(model, beta  = '𝛽')
+
+# test assumptions
+assumption_plots(model)
+residualplot(model)
+QQplot(model)
+
+# evaluate model
+summary(model)
+anova(model_reduced, model)
+
+
+# post hoc analysis
+H <- rbind(
+  "old - int" = c(0, 0, 1, 0), 
+  "young - int" = c(0, 0, 0, 1), 
+  "young - old" = c(0, 0, -1, 1)
+)
+posthocs <- glht(model, linfct = H) 
+summary(posthocs)
+
+posthocs$df
+# make predictions
+# newdat <- data.frame()
+predict(model, 
+        newdata = newdat,
+        level = 0.95,
+        interval = 'prediction'or 'confidence')
+```
